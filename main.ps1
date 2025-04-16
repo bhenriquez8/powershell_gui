@@ -54,12 +54,12 @@ function Load-Install {
     $mainPanel.Controls.Add($labelSoftware)
 
     # === ComboBox: Software selection ===
-    $comboBox = New-Object System.Windows.Forms.ComboBox
-    $comboBox.Location = New-Object System.Drawing.Point(190, 40)
-    $comboBox.Size = New-Object System.Drawing.Size(200, 30)
-    $comboBox.Items.AddRange(@("Chrome", "7-Zip", "Notepad++", "VLC", "Git"))
-    $comboBox.DropDownStyle = 'DropDownList'
-    $mainPanel.Controls.Add($comboBox)
+    $script:comboBox = New-Object System.Windows.Forms.ComboBox
+    $script:comboBox.Location = New-Object System.Drawing.Point(190, 40)
+    $script:comboBox.Size = New-Object System.Drawing.Size(200, 30)
+    $script:comboBox.Items.AddRange(@("Chrome", "7-Zip", "Notepad++", "VLC", "Git"))
+    $script:comboBox.DropDownStyle = 'DropDownList'
+    $mainPanel.Controls.Add($script:comboBox)
 
     # === Label: Enter Hostname ===
     $labelHost = New-Object System.Windows.Forms.Label
@@ -70,45 +70,45 @@ function Load-Install {
     $mainPanel.Controls.Add($labelHost)
 
     # === TextBox: Hostname input ===
-    $hostInput = New-Object System.Windows.Forms.TextBox
-    $hostInput.Location = New-Object System.Drawing.Point(190, 95)
-    $hostInput.Size = New-Object System.Drawing.Size(200, 30)
-    $hostInput.ForeColor = "Black"
-    $mainPanel.Controls.Add($hostInput)
+    $script:hostInput = New-Object System.Windows.Forms.TextBox
+    $script:hostInput.Location = New-Object System.Drawing.Point(190, 95)
+    $script:hostInput.Size = New-Object System.Drawing.Size(200, 30)
+    $script:hostInput.ForeColor = "Black"
+    $mainPanel.Controls.Add($script:hostInput)
 
     # === RadioButton: Install ===
-    $radioInstall = New-Object System.Windows.Forms.RadioButton
-    $radioInstall.Text = "Install"
-    $radioInstall.Location = New-Object System.Drawing.Point(190, 140)
-    $radioInstall.ForeColor = "White"
-    $radioInstall.AutoSize = $true
-    $mainPanel.Controls.Add($radioInstall)
+    $script:radioInstall = New-Object System.Windows.Forms.RadioButton
+    $script:radioInstall.Text = "Install"
+    $script:radioInstall.Location = New-Object System.Drawing.Point(190, 140)
+    $script:radioInstall.ForeColor = "White"
+    $script:radioInstall.AutoSize = $true
+    $mainPanel.Controls.Add($script:radioInstall)
 
     # === RadioButton: Uninstall ===
-    $radioUninstall = New-Object System.Windows.Forms.RadioButton
-    $radioUninstall.Text = "Uninstall"
-    $radioUninstall.Location = New-Object System.Drawing.Point(260, 140)
-    $radioUninstall.ForeColor = "White"
-    $radioUninstall.AutoSize = $true
-    $mainPanel.Controls.Add($radioUninstall)
+    $script:radioUninstall = New-Object System.Windows.Forms.RadioButton
+    $script:radioUninstall.Text = "Uninstall"
+    $script:radioUninstall.Location = New-Object System.Drawing.Point(260, 140)
+    $script:radioUninstall.ForeColor = "White"
+    $script:radioUninstall.AutoSize = $true
+    $mainPanel.Controls.Add($script:radioUninstall)
 
     # === Button: Submit ===
-    $button = New-Object System.Windows.Forms.Button
-    $button.Text = "Execute"
-    $button.Size = New-Object System.Drawing.Size(120, 40)
-    $button.Location = New-Object System.Drawing.Point(200, 190)
-    $button.BackColor = "#444444"
-    $button.ForeColor = "White"
-    $button.FlatStyle = "Flat"
-    $button.Add_Click({
-        $software = $comboBox.SelectedItem
-        $hostname = $hostInput.Text
-        $action = if ($radioInstall.Checked) { "Install" } elseif ($radioUninstall.Checked) { "Uninstall" } else { "None" }
+    $script:button = New-Object System.Windows.Forms.Button
+    $script:button.Text = "Execute"
+    $script:button.Size = New-Object System.Drawing.Size(120, 40)
+    $script:button.Location = New-Object System.Drawing.Point(200, 190)
+    $script:button.BackColor = "#444444"
+    $script:button.ForeColor = "White"
+    $script:button.FlatStyle = "Flat"
+    $script:button.Add_Click({
+        $software = $script:comboBox.SelectedItem
+        $hostname = $script:hostInput.Text
+        $action = if ($script:radioInstall.Checked) { "Install" } elseif ($script:radioUninstall.Checked) { "Uninstall" } else { "None" }
 
         Write-Host "Action: $action | Software: $software | Host: $hostname"
     })
 
-    $mainPanel.Controls.Add($button)
+    $mainPanel.Controls.Add($script:button)
 }
 
 function Load-Tools {
@@ -137,7 +137,7 @@ function Load-Search {
 # === Sidebar Buttons ===
 
 $installBtn = New-Object System.Windows.Forms.Button
-$installBtn.Text = "  Home"
+$installBtn.Text = "  Software"
 $installBtn.Image = $iconInstall
 $installBtn.TextAlign = 'MiddleLeft'
 $installBtn.ImageAlign = 'MiddleLeft'
@@ -155,7 +155,7 @@ $installBtn.Add_Click({
 })
 
 $toolsBtn = New-Object System.Windows.Forms.Button
-$toolsBtn.Text = "  Settings"
+$toolsBtn.Text = "  Tools"
 $toolsBtn.Image = $iconTools
 $toolsBtn.TextAlign = 'MiddleLeft'
 $toolsBtn.ImageAlign = 'MiddleLeft'
@@ -173,7 +173,7 @@ $toolsBtn.Add_Click({
 })
 
 $searchBtn = New-Object System.Windows.Forms.Button
-$searchBtn.Text = "  About"
+$searchBtn.Text = "  Search"
 $searchBtn.Image = $iconSearch
 $searchBtn.TextAlign = 'MiddleLeft'
 $searchBtn.ImageAlign = 'MiddleLeft'
@@ -193,8 +193,10 @@ $searchBtn.Add_Click({
 # === Add Buttons to Sidebar ===
 $sidebar.Controls.AddRange(@($installBtn, $toolsBtn, $searchBtn))
 
-# === Default View ===
-$installBtn.PerformClick()
+# === Default View (fires once form is shown) ===
+$form.Add_Shown({
+    $installBtn.PerformClick()  # Simulate click to load the Install view by default
+})
 
 # === Run ===
 [System.Windows.Forms.Application]::Run($form)
